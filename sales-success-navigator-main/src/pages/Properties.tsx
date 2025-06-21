@@ -27,7 +27,7 @@ const Properties = () => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case '2BHK': return 'bg-blue-100 text-blue-800';
+      case '4BHK': return 'bg-blue-100 text-blue-800';
       case '3BHK': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
