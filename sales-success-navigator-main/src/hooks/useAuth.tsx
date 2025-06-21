@@ -1,26 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, UserRole } from '@/types';
 import { toast } from '@/hooks/use-toast';
-
-// Mock user data
-const MOCK_USERS = [
-  {
-    id: '1',
-    name: 'John Manager',
-    email: 'manager@example.com',
-    password: 'password',
-    role: 'manager' as UserRole,
-  },
-  {
-    id: '2',
-    name: 'Alice Employee',
-    email: 'employee@example.com',
-    password: 'password',
-    role: 'employee' as UserRole,
-  }
-];
+import { apiClient, API_ENDPOINTS } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -42,30 +24,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (storedUser) {
       setUser(JSON.parse(storedUser));
       setIsAuthenticated(true);
-      // Don't redirect here, let the component handle it
     }
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // In a real app, this would be an API call
-    const foundUser = MOCK_USERS.find(u => u.email === email);
-    
-    if (foundUser && foundUser.password === password) {
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
-      setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userWithoutPassword));
-      toast({
-        title: "Login successful",
-        description: `Welcome back, ${foundUser.name}!`,
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.LOGIN, {
+        email,
+        password
       });
-      // Redirect to dashboard after successful login
-      navigate('/dashboard');
-      return true;
-    } else {
+
+      if (response.error) {
+        toast({
+          title: "Login failed",
+          description: response.error,
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      if (response.data?.user) {
+        const userData = response.data.user;
+        const user: User = {
+          id: userData.id.toString(),
+          name: `${userData.first_name} ${userData.last_name}`.trim() || userData.username,
+          email: userData.email,
+          role: userData.role as UserRole,
+        };
+
+        setUser(user);
+        setIsAuthenticated(true);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        toast({
+          title: "Login successful",
+          description: `Welcome back, ${user.name}!`,
+        });
+        
+        navigate('/dashboard');
+        return true;
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Invalid response from server",
+          variant: "destructive",
+        });
+        return false;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Login failed",
-        description: "Invalid email or password",
+        description: "Network error. Please try again.",
         variant: "destructive",
       });
       return false;
