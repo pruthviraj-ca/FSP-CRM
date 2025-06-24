@@ -115,7 +115,7 @@ const AdminLogin = () => {
               <div className="flex justify-center mb-2">
                 <Building2 className="h-12 w-12 text-blue-600" />
               </div>
-              <CardTitle className="text-2xl">Admin Panel</CardTitle>
+              <CardTitle className="text-2xl">Admin page</CardTitle>
               <CardDescription>
                 Login to manage property listings and photos
               </CardDescription>
