@@ -10,7 +10,7 @@ from .models import User, Lead, Property, Flat
 from .serializers import UserSerializer, LeadSerializer, PropertySerializer, FlatSerializer
 
 class HelloWorldView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny]   
 
     def get(self, request):
         return Response({"message": "Hello from Django API!"})
