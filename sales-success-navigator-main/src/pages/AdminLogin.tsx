@@ -117,7 +117,7 @@ const AdminLogin = () => {
               </div>
               <CardTitle className="text-2xl">Admin </CardTitle>
               <CardDescription>
-                Login to manage property listings and photos
+                Login to manage property listings / photos
               </CardDescription>
             </CardHeader>
             <form onSubmit={handleAdminLogin}>
